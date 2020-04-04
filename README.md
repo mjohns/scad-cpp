@@ -1,11 +1,18 @@
 # OpenSCAD++
 
-A generator for creating OpenSCAD files in c++ using an object oriented approach.
+c++ code for easily generating OpenSCAD files.
 
 Example usage:
 ```
-Union(MakeCube(10),
-      MakeSphere(5).Translate(0, 0, 5)).WriteToFile("example.scad);
+Union(Cube(10), Sphere(5).Translate(0, 0, 5)).WriteToFile("example.scad");
 
-g++ *.cc -std=c++11 && ./a.out
+g++ example.cc scad.cc -std=c++17 && ./a.out
 ```
+
+Producing:
+union () {
+  cube (size = [ 10.000, 10.000, 10.000], center = true);
+  translate ([0.000, 0.000, 5.000]) {
+    sphere (r = 5.000);
+  }
+}
