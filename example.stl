@@ -3894,85 +3894,85 @@ solid OpenSCAD_Model
   facet normal -1 0 0
     outer loop
       vertex 45 0 0
-      vertex 45 1 1
-      vertex 45 1 0
+      vertex 45 2 2
+      vertex 45 2 0
     endloop
   endfacet
   facet normal -1 -0 0
     outer loop
-      vertex 45 1 1
+      vertex 45 2 2
       vertex 45 0 0
-      vertex 45 0 1
+      vertex 45 0 2
     endloop
   endfacet
   facet normal -0 0 1
     outer loop
-      vertex 45 1 1
-      vertex 46 0 1
-      vertex 46 1 1
+      vertex 45 2 2
+      vertex 47 0 2
+      vertex 47 2 2
     endloop
   endfacet
   facet normal 0 0 1
     outer loop
-      vertex 46 0 1
-      vertex 45 1 1
-      vertex 45 0 1
+      vertex 47 0 2
+      vertex 45 2 2
+      vertex 45 0 2
     endloop
   endfacet
   facet normal 1 -0 0
     outer loop
-      vertex 46 0 1
-      vertex 46 1 0
-      vertex 46 1 1
+      vertex 47 0 2
+      vertex 47 2 0
+      vertex 47 2 2
     endloop
   endfacet
   facet normal 1 0 0
     outer loop
-      vertex 46 1 0
-      vertex 46 0 1
-      vertex 46 0 0
+      vertex 47 2 0
+      vertex 47 0 2
+      vertex 47 0 0
+    endloop
+  endfacet
+  facet normal 0 1 -0
+    outer loop
+      vertex 47 2 0
+      vertex 45 2 2
+      vertex 47 2 2
+    endloop
+  endfacet
+  facet normal 0 1 0
+    outer loop
+      vertex 45 2 2
+      vertex 47 2 0
+      vertex 45 2 0
     endloop
   endfacet
   facet normal 0 0 -1
     outer loop
       vertex 45 0 0
-      vertex 46 1 0
-      vertex 46 0 0
+      vertex 47 2 0
+      vertex 47 0 0
     endloop
   endfacet
   facet normal -0 0 -1
     outer loop
-      vertex 46 1 0
+      vertex 47 2 0
       vertex 45 0 0
-      vertex 45 1 0
+      vertex 45 2 0
     endloop
   endfacet
   facet normal 0 -1 0
     outer loop
       vertex 45 0 0
-      vertex 46 0 1
-      vertex 45 0 1
+      vertex 47 0 2
+      vertex 45 0 2
     endloop
   endfacet
   facet normal 0 -1 -0
     outer loop
-      vertex 46 0 1
+      vertex 47 0 2
       vertex 45 0 0
-      vertex 46 0 0
-    endloop
-  endfacet
-  facet normal 0 1 -0
-    outer loop
-      vertex 46 1 0
-      vertex 45 1 1
-      vertex 46 1 1
-    endloop
-  endfacet
-  facet normal 0 1 0
-    outer loop
-      vertex 45 1 1
-      vertex 46 1 0
-      vertex 45 1 0
+      vertex 47 0 0
     endloop
   endfacet
   facet normal -0.707107 0.707107 0
