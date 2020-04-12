@@ -6,9 +6,6 @@
 #include <vector>
 
 namespace scad {
-namespace {
-
-const int kTabSize = 2;
 
 const char* BoolStr(bool b) {
   return b ? "true" : "false";
@@ -34,20 +31,21 @@ void WriteComposite(std::FILE* file,
   fprintf(file, "}\n");
 }
 
-Shape MakeComposite(const std::function<void(std::FILE*)>& write_name,
-                    const std::vector<Shape>& shapes) {
+Shape Shape::Composite(const std::function<void(std::FILE*)>& write_name,
+                       const std::vector<Shape>& shapes) {
   return Shape([=](std::FILE* file, int indent_level) {
     WriteComposite(file, write_name, shapes, indent_level);
   });
 }
 
-Shape MakeLiteralComposite(const char* name, const std::vector<Shape>& shapes) {
+Shape Shape::LiteralComposite(const std::string& name, const std::vector<Shape>& shapes) {
   return Shape([=](std::FILE* file, int indent_level) {
-    WriteComposite(file, [=](std::FILE*) { fprintf(file, "%s", name); }, shapes, indent_level);
+    WriteComposite(
+        file, [=](std::FILE*) { fprintf(file, "%s", name.c_str()); }, shapes, indent_level);
   });
 }
 
-Shape MakePrimitive(const std::function<void(std::FILE*)>& scad_writer) {
+Shape Shape::Primitive(const std::function<void(std::FILE*)>& scad_writer) {
   return Shape([=](std::FILE* file, int indent_level) {
     WriteIndent(file, indent_level);
     scad_writer(file);
@@ -55,10 +53,12 @@ Shape MakePrimitive(const std::function<void(std::FILE*)>& scad_writer) {
   });
 }
 
-}  // namespace
+Shape Shape::LiteralPrimitive(const std::string& primitive) {
+  return Primitive([=](std::FILE* file) { fprintf(file, "%s", primitive.c_str()); });
+}
 
 Shape Cube(const CubeParams& params) {
-  return MakePrimitive([=](std::FILE* file) {
+  return Shape::Primitive([=](std::FILE* file) {
     fprintf(file,
             "cube (size = [ %.3f, %.3f, %.3f], center = %s);",
             params.x,
@@ -82,7 +82,7 @@ Shape Cube(double size, bool center) {
 }
 
 Shape Square(const SquareParams& params) {
-  return MakePrimitive([=](std::FILE* file) {
+  return Shape::Primitive([=](std::FILE* file) {
     fprintf(file,
             "square (size = [%.3f, %.3f], center = %s);",
             params.x,
@@ -104,7 +104,7 @@ Shape Square(double size, bool center) {
 }
 
 Shape Sphere(const SphereParams& params) {
-  return MakePrimitive([=](std::FILE* file) {
+  return Shape::Primitive([=](std::FILE* file) {
     fprintf(file, "sphere (r = %.3f", params.r);
     if (params.fs.has_value()) {
       fprintf(file, ", $fs = %.3f", params.fs.value());
@@ -126,7 +126,7 @@ Shape Sphere(double radius) {
 }
 
 Shape Circle(const CircleParams& params) {
-  return MakePrimitive([=](std::FILE* file) {
+  return Shape::Primitive([=](std::FILE* file) {
     fprintf(file, "circle (r = %.3f", params.r);
     if (params.fs.has_value()) {
       fprintf(file, ", $fs = %.3f", params.fs.value());
@@ -148,7 +148,7 @@ Shape Circle(double radius) {
 }
 
 Shape Cylinder(const CylinderParams& params) {
-  return MakePrimitive([=](std::FILE* file) {
+  return Shape::Primitive([=](std::FILE* file) {
     fprintf(file,
             "cylinder(h = %.3f, r1 = %.3f, r2 = %.3f, center = %s",
             params.h,
@@ -172,7 +172,7 @@ Shape Cylinder(double height, double radius, Optional<double> fn) {
 }
 
 Shape Polygon(const std::vector<Point2d>& points) {
-  return MakePrimitive([=](std::FILE* file) {
+  return Shape::Primitive([=](std::FILE* file) {
     fprintf(file, "polygon (points = [");
     for (int i = 0; i < points.size(); ++i) {
       const Point2d& p = points[i];
@@ -186,26 +186,26 @@ Shape Polygon(const std::vector<Point2d>& points) {
 }
 
 Shape HullAll(const std::vector<Shape>& shapes) {
-  return MakeLiteralComposite("hull ()", shapes);
+  return Shape::LiteralComposite("hull ()", shapes);
 }
 
 Shape UnionAll(const std::vector<Shape>& shapes) {
-  return MakeLiteralComposite("union ()", shapes);
+  return Shape::LiteralComposite("union ()", shapes);
 }
 
 Shape DifferenceAll(const std::vector<Shape>& shapes) {
-  return MakeLiteralComposite("difference ()", shapes);
+  return Shape::LiteralComposite("difference ()", shapes);
 }
 
 Shape IntersectionAll(const std::vector<Shape>& shapes) {
-  return MakeLiteralComposite("intersection ()", shapes);
+  return Shape::LiteralComposite("intersection ()", shapes);
 }
 
 Shape Shape::Translate(double x, double y, double z) const {
   auto write_name = [=](std::FILE* file) {
     fprintf(file, "translate ([%.3f, %.3f, %.3f])", x, y, z);
   };
-  return MakeComposite(write_name, {*this});
+  return Shape::Composite(write_name, {*this});
 }
 
 Shape Shape::TranslateX(double x) const {
@@ -222,14 +222,14 @@ Shape Shape::TranslateZ(double z) const {
 
 Shape Shape::Mirror(double x, double y, double z) const {
   auto write_name = [=](std::FILE* file) { fprintf(file, "mirror ([%.3f, %.3f, %.3f])", x, y, z); };
-  return MakeComposite(write_name, {*this});
+  return Shape::Composite(write_name, {*this});
 }
 
 Shape Shape::Rotate(double degrees, double x, double y, double z) const {
   auto write_name = [=](std::FILE* file) {
     fprintf(file, "rotate (a = %.3f, v = [%.3f, %.3f, %.3f])", degrees, x, y, z);
   };
-  return MakeComposite(write_name, {*this});
+  return Shape::Composite(write_name, {*this});
 }
 
 Shape Shape::RotateX(double degrees) const {
@@ -256,7 +256,7 @@ Shape Shape::LinearExtrude(const LinearExtrudeParams& params) const {
             params.slices,
             params.scale);
   };
-  return MakeComposite(write_name, {*this});
+  return Shape::Composite(write_name, {*this});
 }
 
 Shape Shape::LinearExtrude(double height) const {
@@ -269,22 +269,22 @@ Shape Shape::Color(double r, double g, double b, double a) const {
   auto write_name = [=](std::FILE* file) {
     fprintf(file, "color (c = [%.3f, %.3f, %.3f, %.3f])", r, g, b, a);
   };
-  return MakeComposite(write_name, {*this});
+  return Shape::Composite(write_name, {*this});
 }
 
 Shape Shape::Color(const std::string& color, double a) const {
   auto write_name = [=](std::FILE* file) { fprintf(file, "color (\"%s\", %f)", color.c_str(), a); };
-  return MakeComposite(write_name, {*this});
+  return Shape::Composite(write_name, {*this});
 }
 
 Shape Shape::Alpha(double a) const {
   auto write_name = [=](std::FILE* file) { fprintf(file, "color (alpha = %.3f)", a); };
-  return MakeComposite(write_name, {*this});
+  return Shape::Composite(write_name, {*this});
 }
 
 Shape Shape::Scale(double x, double y, double z) const {
   auto write_name = [=](std::FILE* file) { fprintf(file, "scale ([%.3f, %.3f, %.3f])", x, y, z); };
-  return MakeComposite(write_name, {*this});
+  return Shape::Composite(write_name, {*this});
 }
 
 Shape Shape::Scale(double s) const {
@@ -295,14 +295,14 @@ Shape Shape::OffsetRadius(double r, bool chamfer) const {
   auto write_name = [=](std::FILE* file) {
     fprintf(file, "offset (r = %.3f, chamfer = %s)", r, BoolStr(chamfer));
   };
-  return MakeComposite(write_name, {*this});
+  return Shape::Composite(write_name, {*this});
 }
 
 Shape Shape::OffsetDelta(double delta, bool chamfer) const {
   auto write_name = [=](std::FILE* file) {
     fprintf(file, "offset (delta = %.3f, chamfer = %s)", delta, BoolStr(chamfer));
   };
-  return MakeComposite(write_name, {*this});
+  return Shape::Composite(write_name, {*this});
 }
 
 Shape Shape::Subtract(const Shape& other) const {
@@ -342,7 +342,7 @@ Shape Shape::Comment(const std::string& comment) const {
 
 Shape Shape::Projection(bool cut) const {
   auto write_name = [=](std::FILE* file) { fprintf(file, "projection (cut = %s)", BoolStr(cut)); };
-  return MakeComposite(write_name, {*this});
+  return Shape::Composite(write_name, {*this});
 }
 
 void Shape::AppendScad(std::FILE* file, int indent_level) const {
@@ -363,7 +363,7 @@ void Shape::WriteToFile(const std::string& file_name) const {
 }
 
 Shape Import(const std::string& file_name, int convexity) {
-  return MakePrimitive([=](std::FILE* file) {
+  return Shape::Primitive([=](std::FILE* file) {
     if (convexity > 0) {
       fprintf(file, "import (file = \"%s\", convexity = %d);", file_name.c_str(), convexity);
     } else {
@@ -373,7 +373,7 @@ Shape Import(const std::string& file_name, int convexity) {
 }
 
 Shape Minkowski(const Shape& first, const Shape& second) {
-  return MakeLiteralComposite("minkowski ()", {first, second});
+  return Shape::LiteralComposite("minkowski ()", {first, second});
 }
 
 }  // namespace scad

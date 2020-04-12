@@ -12,6 +12,8 @@ int main() {
     shapes.push_back(s.TranslateX(15 * i));
   }
 
+  shapes.push_back(Shape::LiteralPrimitive("cube(2);").TranslateX(45));
+
   Shape cylinder = Cylinder(1, 2, 20).Projection().LinearExtrude(30);
 
   (UnionAll(shapes) - cylinder).WriteToFile("example.scad");

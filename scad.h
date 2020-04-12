@@ -13,6 +13,8 @@
 
 namespace scad {
 
+const int kTabSize = 2;
+
 using ScadWriter = std::function<void(std::FILE* file, int indent_level)>;
 
 template <typename T>
@@ -54,6 +56,12 @@ class Shape {
   }
   explicit Shape(ScadWriter scad) : scad_(std::make_shared<ScadWriter>(std::move(scad))) {
   }
+
+  static Shape Composite(const std::function<void(std::FILE*)>& write_name,
+                         const std::vector<Shape>& shapes);
+  static Shape LiteralComposite(const std::string& name, const std::vector<Shape>& shapes);
+  static Shape Primitive(const std::function<void(std::FILE*)>& scad_writer);
+  static Shape LiteralPrimitive(const std::string& primitive);
 
   void WriteToFile(const std::string& file_name) const;
   void AppendScad(std::FILE* file, int indent_level) const;
@@ -193,5 +201,12 @@ Shape SCAD_WARN_UNUSED_RESULT Intersection(const Shape& shape, const Shapes&... 
 Shape SCAD_WARN_UNUSED_RESULT Import(const std::string& file_name, int convexity = -1);
 
 Shape SCAD_WARN_UNUSED_RESULT Minkowski(const Shape& first, const Shape& second);
+
+const char* BoolStr(bool b);
+void WriteIndent(std::FILE* file, int indent_level);
+void WriteComposite(std::FILE* file,
+                    const std::function<void(std::FILE*)>& write_name,
+                    const std::vector<Shape>& shapes,
+                    int indent_level);
 
 }  // namespace scad
