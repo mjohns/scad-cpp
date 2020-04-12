@@ -68,6 +68,12 @@ class Shape {
   }
 
   Shape SCAD_WARN_UNUSED_RESULT Mirror(double x, double y, double z) const;
+  Shape SCAD_WARN_UNUSED_RESULT MirrorY() const {
+    return Mirror(0, 1, 0);
+  }
+  Shape SCAD_WARN_UNUSED_RESULT MirrorX() const {
+    return Mirror(1, 0, 0);
+  }
 
   Shape SCAD_WARN_UNUSED_RESULT Rotate(double degrees, double x, double y, double z) const;
   Shape SCAD_WARN_UNUSED_RESULT RotateX(double degrees) const;
