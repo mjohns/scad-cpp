@@ -25,7 +25,7 @@ difference () {
       }
     }
     translate ([45.000, 0.000, 0.000]) {
-      cube(1);
+      cube(2);
     }
   }
   linear_extrude (height = 30.000, center = true, convexity = 10.000, twist = 0.000, slices = 20, scale = 1.000) {
