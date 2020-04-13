@@ -170,6 +170,17 @@ struct Point2d {
 };
 Shape SCAD_WARN_UNUSED_RESULT Polygon(const std::vector<Point2d>& points);
 
+Shape SCAD_WARN_UNUSED_RESULT RegularPolygon(int n, double radius);
+
+struct Point3d {
+  double x = 0;
+  double y = 0;
+  double z = 0;
+};
+Shape SCAD_WARN_UNUSED_RESULT Polyhedron(const std::vector<Point3d>& points,
+                                         const std::vector<std::vector<int>>& faces,
+                                         int convexity = 1);
+
 Shape SCAD_WARN_UNUSED_RESULT HullAll(const std::vector<Shape>& shapes);
 
 template <typename... Shapes>
