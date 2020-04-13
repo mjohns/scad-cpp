@@ -1,5 +1,6 @@
 #include "scad.h"
 
+#include <math.h>
 #include <cstdio>
 #include <memory>
 #include <string>
@@ -179,9 +180,49 @@ Shape Polygon(const std::vector<Point2d>& points) {
       if (i != 0) {
         fputc(',', file);
       }
-      fprintf(file, "[%.3f, %.3f],", p.x, p.y);
+      fprintf(file, "[%.3f, %.3f]", p.x, p.y);
     }
     fprintf(file, "]);");
+  });
+}
+
+Shape RegularPolygon(int n, double r) {
+  std::vector<Point2d> points;
+  for (int i = 0; i < n; ++i) {
+    double step = (2.0 * M_PI) / n;
+    points.push_back({r * sin(step * i), r * cos(step * i)});
+  }
+  return Polygon(points);
+}
+
+Shape Polyhedron(const std::vector<Point3d>& points,
+                 const std::vector<std::vector<int>>& faces,
+                 int convexity) {
+  return Shape::Primitive([=](std::FILE* file) {
+    fprintf(file, "polyhedron (points = [");
+    for (int i = 0; i < points.size(); ++i) {
+      const Point3d& p = points[i];
+      if (i > 0) {
+        fputc(',', file);
+      }
+      fprintf(file, "[%.3f, %.3f, %.3f]", p.x, p.y, p.z);
+    }
+    fprintf(file, "], faces = [");
+    for (int i = 0; i < faces.size(); ++i) {
+      if (i > 0) {
+        fputc(',', file);
+      }
+      const auto& face = faces[i];
+      fprintf(file, "[");
+      for (int f = 0; f < face.size(); ++f) {
+        if (f != 0) {
+          fputc(',', file);
+        }
+        fprintf(file, "%d", face[f]);
+      }
+      fprintf(file, "]");
+    }
+    fprintf(file, "], convexity = %d);", convexity);
   });
 }
 
