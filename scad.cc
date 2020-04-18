@@ -131,6 +131,13 @@ Shape Sphere(double radius) {
   return Sphere(params);
 }
 
+Shape Sphere(double radius, double fn) {
+  SphereParams params;
+  params.r = radius;
+  params.fn = fn;
+  return Sphere(params);
+}
+
 Shape Circle(const CircleParams& params) {
   return Shape::Primitive([=](std::FILE* file) {
     fprintf(file, "circle (r = %.3f", params.r);
@@ -150,6 +157,13 @@ Shape Circle(const CircleParams& params) {
 Shape Circle(double radius) {
   CircleParams params;
   params.r = radius;
+  return Circle(params);
+}
+
+Shape Circle(double radius, double fn) {
+  CircleParams params;
+  params.r = radius;
+  params.fn = fn;
   return Circle(params);
 }
 
@@ -268,6 +282,13 @@ Shape Shape::TranslateZ(double z) const {
 
 Shape Shape::Mirror(double x, double y, double z) const {
   auto write_name = [=](std::FILE* file) { fprintf(file, "mirror ([%.3f, %.3f, %.3f])", x, y, z); };
+  return Shape::Composite(write_name, {*this});
+}
+
+Shape Shape::Rotate(double rx, double ry, double rz) const {
+  auto write_name = [=](std::FILE* file) {
+    fprintf(file, "rotate ([%.3f, %.3f, %.3f])", rx, ry, rz);
+  };
   return Shape::Composite(write_name, {*this});
 }
 

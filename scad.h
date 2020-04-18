@@ -83,6 +83,7 @@ class Shape {
     return Mirror(1, 0, 0);
   }
 
+  Shape SCAD_WARN_UNUSED_RESULT Rotate(double rx, double ry, double rz) const;
   Shape SCAD_WARN_UNUSED_RESULT Rotate(double degrees, double x, double y, double z) const;
   Shape SCAD_WARN_UNUSED_RESULT RotateX(double degrees) const;
   Shape SCAD_WARN_UNUSED_RESULT RotateY(double degrees) const;
@@ -135,6 +136,7 @@ struct SphereParams {
 };
 Shape SCAD_WARN_UNUSED_RESULT Sphere(const SphereParams& params);
 Shape SCAD_WARN_UNUSED_RESULT Sphere(double radius);
+Shape SCAD_WARN_UNUSED_RESULT Sphere(double radius, double fn);
 
 struct CircleParams {
   double r = 1;
@@ -144,6 +146,7 @@ struct CircleParams {
 };
 Shape SCAD_WARN_UNUSED_RESULT Circle(const CircleParams& params);
 Shape SCAD_WARN_UNUSED_RESULT Circle(double radius);
+Shape SCAD_WARN_UNUSED_RESULT Circle(double radius, double fn);
 
 struct CylinderParams {
   double h = 1;
